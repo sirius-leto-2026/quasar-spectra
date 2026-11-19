@@ -1,0 +1,72 @@
+:root { --navy: #16357a; --blue: #2f6fd6; --violet: #5b2d91; --ink: #1b2233; --muted: #5a6275; --line: #d3dcec; --soft: #eef3fc; --bg: #f7f9fd; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); background: var(--bg); font-size: 15px; }
+header { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--line); }
+h1 { margin: 0; font-size: 22px; color: var(--navy); }
+.sub, .muted { color: var(--muted); }
+.small { font-size: 13px; }
+nav button { border: 1px solid var(--line); background: #fff; padding: 8px 14px; border-radius: 6px; cursor: pointer; font: inherit; }
+nav button.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+main { padding: 14px 20px; }
+.tab { display: none; }
+.tab.on { display: block; }
+#spec.on { display: flex; gap: 14px; }
+aside { width: 300px; flex: none; }
+.list { max-height: 640px; overflow: auto; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.list button { display: flex; justify-content: space-between; width: 100%; border: 0; border-bottom: 1px solid var(--line); background: #fff; padding: 6px 10px; text-align: left; font: inherit; font-size: 13px; cursor: pointer; }
+.list button:hover { background: var(--soft); }
+.list button.on { background: #dfe8fb; font-weight: 600; }
+.list .ok { color: #1a7f37; }
+.hint { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+.work { flex: 1; min-width: 0; }
+.title-row { display: flex; gap: 12px; align-items: baseline; margin-bottom: 6px; flex-wrap: wrap; }
+canvas { width: 100%; height: auto; background: #fff; border: 1px solid var(--line); border-radius: 6px; display: block; }
+#plot { cursor: crosshair; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 10px 0; }
+input[type=number] { width: 90px; font: inherit; padding: 4px 6px; }
+input[type=range] { flex: 1; min-width: 200px; }
+select, button { font: inherit; }
+.controls button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+.controls button.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #f0a020; outline-offset: 1px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin: 8px 0; }
+.card { background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--blue); border-radius: 6px; padding: 6px 10px; }
+.card .k { font-size: 12px; color: var(--muted); }
+.card .v { font-size: 20px; font-weight: 700; color: var(--violet); }
+.card .s { font-size: 12px; color: var(--muted); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px; }
+figure { margin: 0; }
+figcaption { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.tablewrap { overflow: auto; margin-top: 12px; }
+table { border-collapse: collapse; background: #fff; font-size: 13px; width: 100%; }
+th, td { border: 1px solid var(--line); padding: 4px 7px; text-align: right; white-space: nowrap; }
+th { background: var(--navy); color: #fff; position: sticky; top: 0; }
+td:first-child, th:first-child { text-align: left; }
+tr.bad td { background: #fff1f0; }
+.lead { max-width: 900px; }
+.verdict { background: #fff; border-left: 4px solid var(--violet); padding: 8px 12px; border-radius: 4px; }
+table.calc { width: auto; font-size: 15px; }
+table.calc td { padding: 6px 12px; }
+footer { padding: 10px 20px; font-size: 12px; color: var(--muted); }
+@media (max-width: 800px) { #spec.on { flex-direction: column; } aside { width: auto; } .list { max-height: 220px; } .grid2 { grid-template-columns: 1fr; } }
+/* карта неба */
+.skywrap { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.skybox { position: relative; flex: 1 1 520px; max-width: 860px; }
+.skybox img { width: 100%; display: block; border-radius: 6px; }
+#skysvg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#skysvg circle { fill: transparent; stroke-width: 4; cursor: pointer; }
+#skysvg text { font: 600 28px "Segoe UI", Arial; pointer-events: none; }
+#skysvg .qmark:hover circle, #skysvg .qmark:focus circle { stroke-width: 8; }
+#skysvg .qmark:focus { outline: none; }
+.skyside { flex: 0 1 300px; }
+.thumb { float: right; width: 110px; height: 110px; margin: 0 0 6px 8px; border-radius: 4px; }
+.skyside .card { min-height: 140px; line-height: 1.5; }
+.quizbar { background: #fff7e6; border: 1px solid #f0c36d; border-radius: 6px; padding: 6px 10px; margin-bottom: 6px; }
+h3 { color: var(--navy); margin: 16px 0 6px; }
+.theory dt { font-weight: 700; color: var(--navy); margin-top: 6px; }
+.theory dd { margin: 0 0 0 0; }
+.theory table { width: auto; }
+.ok { color: #1a7f37; font-weight: 600; }
+/* текстовые таблицы (критерии, контроль качества, линии): текст слева, перенос строк */
+table.txt th, table.txt td { text-align: left; white-space: normal; }
+table.txt td:last-child { white-space: nowrap; }

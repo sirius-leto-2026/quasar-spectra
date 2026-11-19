@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Спектры квазаров — лаборатория</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <div>
+    <h1>Спектры квазаров</h1>
+    <div class="sub" id="meta">загрузка данных…</div>
+  </div>
+  <nav id="tabs" aria-label="Разделы">
+    <button data-tab="sky">Карта неба</button>
+    <button data-tab="spec" class="on">Спектр и z</button>
+    <button data-tab="sample">Выборка</button>
+    <button data-tab="epochs">Эпохи и блазары</button>
+    <button data-tab="forest">Лес Лайман-альфа</button>
+    <button data-tab="calc">Калькулятор</button>
+    <button data-tab="theory">Теория</button>
+    <button data-tab="results">Итоги</button>
+  </nav>
+</header>
+
+<main>
+  <!-- Карта неба -->
+  <section id="sky" class="tab">
+    <p class="lead">Снимок участка неба из обзора SDSS. Кружки — квазары из каталога, цвет и подпись — красное смещение. Щёлкните по кружку, чтобы открыть спектр.</p>
+    <div class="skywrap">
+      <div class="skybox" id="skybox"><img id="skyimg" src="data/sky.jpg" alt="Снимок участка неба SDSS с отмеченными квазарами"><svg id="skysvg" aria-hidden="true"></svg></div>
+      <div class="skyside">
+        <div id="skyinfo" class="card">Наведите курсор на квазар.</div>
+        <div class="muted small" id="skymeta"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Спектр -->
+  <section id="spec" class="tab on">
+    <aside>
+      <label class="hint">Набор: <select id="dataset"></select></label>
+      <div class="list" id="qlist"></div>
+    </aside>
+    <div class="work">
+      <div class="title-row"><b id="qname">—</b><span id="qinfo" class="muted"></span><span id="qlinks"></span></div>
+      <div id="quizbar" class="quizbar" hidden></div>
+      <canvas id="plot" width="1100" height="420" aria-label="Спектр квазара"></canvas>
+      <div class="controls">
+        <label>z = <input id="zin" type="number" step="0.001" min="0" max="7" value="0"></label>
+        <input id="zslider" type="range" min="0" max="5.5" step="0.001" value="0" aria-label="Красное смещение">
+        <button id="auto">Авто-поиск z</button>
+        <button id="accept" class="primary">Принять моё z</button>
+        <button id="quiz">Тренажёр: незнакомый квазар</button>
+      </div>
+      <div class="controls">
+        <label>Отметить линию: <select id="markline"></select></label>
+        <span class="muted">→ щёлкните по пику на графике: z = λ<sub>набл</sub> / λ<sub>лаб</sub> − 1</span>
+        <label><input type="checkbox" id="smoothchk" checked> сглаживание</label>
+        <label><input type="checkbox" id="restchk"> шкала в системе покоя</label>
+      </div>
+      <div class="cards">
+        <div class="card" id="card_cat"><div class="k">z по каталогу SDSS</div><div class="v" id="c_zcat">—</div><div class="s" id="c_qc"></div></div>
+        <div class="card"><div class="k">Моё z</div><div class="v" id="c_zmy">—</div><div class="s" id="c_dz"></div></div>
+        <div class="card"><div class="k">Расстояние (сопутствующее)</div><div class="v" id="c_dc">—</div><div class="s" id="c_dc2"></div></div>
+        <div class="card"><div class="k">Свет шёл к нам</div><div class="v" id="c_lb">—</div></div>
+        <div class="card"><div class="k">Возраст Вселенной тогда</div><div class="v" id="c_age">—</div></div>
+      </div>
+      <div class="muted small" id="linesused"></div>
+    </div>
+  </section>
+
+  <!-- Выборка -->
+  <section id="sample" class="tab">
+    <div class="controls">
+      <button id="autoall">Авто-z для всех без своего z</button>
+      <button id="csv">Скачать таблицу CSV</button>
+      <span class="muted" id="sumline"></span>
+    </div>
+    <div class="grid2">
+      <figure><canvas id="hist" width="560" height="320"></canvas><figcaption>Распределение квазаров участка по расстоянию</figcaption></figure>
+      <figure><canvas id="cone" width="560" height="320"></canvas><figcaption>«Разрез» Вселенной: направление (RA) и расстояние</figcaption></figure>
+    </div>
+    <div class="tablewrap"><table id="tbl"></table></div>
+  </section>
+
+  <!-- Эпохи и блазары -->
+  <section id="epochs" class="tab">
+    <p class="lead">Средние (композитные) спектры квазаров разных эпох в системе покоя: каждый спектр «растянут обратно» на (1+z) и усреднён. Линии водорода, углерода, кремния, магния и кислорода видны во все эпохи — тяжёлые элементы были в квазарах уже через 1–2 млрд лет после Большого взрыва.</p>
+    <figure><canvas id="compplot" width="1200" height="430"></canvas><figcaption id="compcap"></figcaption></figure>
+    <h3>Квазары и блазары</h3>
+    <div class="controls"><label>Блазар: <select id="bzsel"></select></label><span class="muted" id="bzinfo"></span></div>
+    <figure><canvas id="bzplot" width="1200" height="360"></canvas><figcaption>Серым — средний спектр квазаров того же диапазона длин волн, цветом — блазар (в системе покоя, z по литературе).</figcaption></figure>
+    <div class="tablewrap"><table id="bztbl"></table></div>
+  </section>
+
+  <!-- Лес Лайман-альфа -->
+  <section id="forest" class="tab">
+    <p class="lead">Гипотеза проекта: число линий поглощения в лесе Лайман-альфа (и доля поглощённого света D<sub>A</sub>) растёт с красным смещением квазара. Участок (1+z)·[1080; 1160] Å; континуум — степенной закон по «чистым» окнам краснее Lyα. Выборка: квазары участка с z ≥ 2,2 и 40 ярких далёких квазаров из окрестности, после контроля качества.</p>
+    <div class="grid2">
+      <figure><canvas id="fplot" width="560" height="360"></canvas><figcaption>Доля поглощённого света D<sub>A</sub> (точки) и закон из литературы (штрих)</figcaption></figure>
+      <figure><canvas id="fplot2" width="560" height="360"></canvas><figcaption>Число линий на 100 Å: метод 2 (●) и метод 1 (×)</figcaption></figure>
+    </div>
+    <div class="verdict" id="verdict"></div>
+    <div class="tablewrap"><table id="ftbl"></table></div>
+  </section>
+
+  <!-- Калькулятор -->
+  <section id="calc" class="tab">
+    <p class="lead">Плоская модель ΛCDM, параметры Planck 2018: H<sub>0</sub> = 67,66 км/с/Мпк, Ω<sub>m</sub> = 0,3111, Ω<sub>Λ</sub> = 0,6889.</p>
+    <div class="controls">
+      <label>z = <input id="cz" type="number" step="0.01" min="0" value="2"></label>
+      <label>H<sub>0</sub> = <input id="cH0" type="number" step="0.1" value="67.66"></label>
+      <label>Ω<sub>m</sub> = <input id="cOm" type="number" step="0.001" value="0.3111"></label>
+    </div>
+    <table class="calc" id="calcout"></table>
+  </section>
+
+  <!-- Теория -->
+  <section id="theory" class="tab">
+    <div class="grid2 theory">
+      <div>
+        <h3>Как определить красное смещение</h3>
+        <ol>
+          <li>Найдите в спектре 2–3 широкие яркие линии (горбы).</li>
+          <li>Предположите, какая это линия (по таблице справа), и щёлкните по её пику: z = λ<sub>набл</sub> / λ<sub>лаб</sub> − 1.</li>
+          <li>Проверьте: остальные линии должны встать на свои горбы. Если не встали — гипотеза неверна, попробуйте другую линию.</li>
+          <li>Если синее яркой линии спектр «изрезан» узкими провалами — это лес Лайман-альфа, а линия — Lyα (z &gt; 2).</li>
+          <li>Ловушка: Lyα далёкого квазара легко принять за Mg II близкого (отношение длин волн 2798/1216 ≈ 2,30 — не путайте). Решает лес.</li>
+        </ol>
+        <h3>Формулы</h3>
+        <p>1 + z = λ<sub>набл</sub> / λ<sub>лаб</sub> = a(сейчас) / a(тогда) — во сколько раз растянулась Вселенная, пока шёл свет.</p>
+        <p>Сопутствующее расстояние D<sub>C</sub> = (c/H<sub>0</sub>) ∫<sub>0</sub><sup>z</sup> dz′ / E(z′), E(z) = √(Ω<sub>m</sub>(1+z)³ + Ω<sub>Λ</sub>).</p>
+        <p>Возраст плоской ΛCDM: t(z) = 2 / (3H<sub>0</sub>√Ω<sub>Λ</sub>) · arsh(√(Ω<sub>Λ</sub>/Ω<sub>m</sub>) (1+z)<sup>−3/2</sup>).</p>
+        <h3>Глоссарий</h3>
+        <dl id="gloss"></dl>
+      </div>
+      <div>
+        <h3>Лабораторные длины волн линий квазаров</h3>
+        <table id="labtbl" class="txt"></table>
+        <h3>Источники</h3>
+        <ol class="small">
+          <li>Lyke B. W. et al. The SDSS Quasar Catalog: Sixteenth Data Release // ApJS. 2020. 250. 8.</li>
+          <li>Vanden Berk D. E. et al. Composite Quasar Spectra from the SDSS // AJ. 2001. 122. 549.</li>
+          <li>Rauch M. The Lyman Alpha Forest in the Spectra of QSOs // ARA&amp;A. 1998. 36. 267.</li>
+          <li>Faucher-Giguère C.-A. et al. The Lyα forest effective optical depth // ApJ. 2008. 681. 831.</li>
+          <li>Bañados E. et al. An 800-million-solar-mass black hole at z = 7,5 // Nature. 2018. 553. 473.</li>
+          <li>Planck Collaboration. Planck 2018 results. VI. Cosmological parameters // A&amp;A. 2020. 641. A6.</li>
+          <li>Vestergaard M., Osmer P. S. Mass functions of active black holes // ApJ. 2009. 699. 800.</li>
+          <li>Urry C. M., Padovani P. Unified schemes for radio-loud AGN // PASP. 1995. 107. 803.</li>
+          <li>Hogg D. W. Distance measures in cosmology // arXiv:astro-ph/9905116.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Итоги -->
+  <section id="results" class="tab">
+    <h3>Критерии успеха</h3>
+    <div class="tablewrap"><table id="crittbl" class="txt"></table></div>
+    <h3>Главные выводы</h3>
+    <ul id="findings"></ul>
+    <h3>Ошибки каталога, найденные контролем качества</h3>
+    <div class="tablewrap"><table id="qctbl" class="txt"></table></div>
+  </section>
+</main>
+<footer>Данные: Sloan Digital Sky Survey DR17 (sdss.org), открытый доступ. Проект «Сириус.Лето» 2026/27, партнёр — ФИЦ КНЦ СО РАН. <a href="privacy.html">Данные, условия и источники</a></footer>
+
+<script src="data/quasars.js"></script>
+<script src="data/forest.js"></script>
+<script src="data/blazars.js"></script>
+<script src="data/results.js"></script>
+<script src="js/science.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

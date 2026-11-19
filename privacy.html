@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Данные, условия и источники — Спектры квазаров</title><link rel="stylesheet" href="css/style.css"></head>
+<body><main class="lead" style="padding:20px">
+<h1>Данные, условия и источники</h1>
+<p><a href="index.html">← к лаборатории</a></p>
+<h2>Политика конфиденциальности</h2>
+<p>Сайт не собирает и не передаёт персональные данные: нет регистрации, форм отправки, счётчиков, рекламы, сторонних скриптов и cookie. Все файлы (страница, данные, картинки) загружаются с того же сайта.</p>
+<p>Единственное, что сохраняется, — значения z, которые вы сами ввели в тренажёре. Они хранятся только в вашем браузере (localStorage, ключ <code>quasar-spectra:myz</code>), никуда не отправляются и нужны, чтобы ответы не пропали при перезагрузке. Удалить их можно кнопкой ниже или очисткой данных сайта в браузере.</p>
+<p><button id="clear">Удалить мои сохранённые ответы</button> <span id="msg" role="status"></span></p>
+<h2>Условия использования</h2>
+<p>Учебный некоммерческий проект: бесплатно, без оплаты и возвратов. Результаты носят учебный характер и не заменяют научные публикации. Материалы можно использовать в обучении со ссылкой на проект и на SDSS.</p>
+<h2>Возраст</h2>
+<p>Сайтом можно пользоваться в любом возрасте: он не запрашивает данных о пользователе, поэтому согласие родителей не требуется.</p>
+<h2>Источники и лицензии</h2>
+<ul>
+<li>Спектры, каталог и снимок неба — Sloan Digital Sky Survey DR17 (<a href="https://www.sdss.org/collaboration/citing-sdss/">правила цитирования SDSS</a>). Funding for the Sloan Digital Sky Survey IV has been provided by the Alfred P. Sloan Foundation, the U.S. Department of Energy Office of Science, and the Participating Institutions.</li>
+<li>Ссылки на внешние сервисы (SkyServer, Aladin Lite) открываются только по вашему щелчку.</li>
+<li>Шрифты — системные (Segoe UI / Arial), не встраиваются; графики построены самой программой.</li>
+</ul>
+<h2>Организатор и контакты</h2>
+<p>Организатор: команда проекта «Сириус.Лето» 2026/27, партнёр — ФИЦ КНЦ СО РАН. Вопросы — через наставника проекта на платформе «Сириус.Лето».</p>
+</main>
+<script>document.getElementById("clear").onclick=function(){try{localStorage.removeItem("quasar-spectra:myz");document.getElementById("msg").textContent="Удалено.";}catch(e){document.getElementById("msg").textContent="Хранилище недоступно — данных нет.";}};</script>
+</body></html>

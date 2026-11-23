@@ -4,13 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Спектры квазаров — лаборатория</title>
+<meta name="description" content="Учебная лаборатория по спектрам квазаров SDSS: карта неба, красное смещение по линиям, лес Лайман-альфа, калькулятор и итоги проекта.">
+<meta name="theme-color" content="#16357a">
+<link rel="canonical" href="https://sirius-leto-2026.github.io/quasar-spectra/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Спектры квазаров — лаборатория">
+<meta property="og:title" content="Спектры квазаров — лаборатория">
+<meta property="og:description" content="Учебная лаборатория по спектрам квазаров SDSS: карта неба, красное смещение по линиям, лес Лайман-альфа, калькулятор и итоги проекта.">
+<meta property="og:url" content="https://sirius-leto-2026.github.io/quasar-spectra/">
+<meta property="og:image" content="https://sirius-leto-2026.github.io/quasar-spectra/data/sky.jpg">
+<meta property="og:image:width" content="1440">
+<meta property="og:image:height" content="1440">
+<meta property="og:image:alt" content="Снимок участка неба SDSS с отмеченными квазарами">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="css/style.css">
+<script src="data/quasars.js" defer></script>
+<script src="data/blazars.js" defer></script>
+<script src="data/results.js" defer></script>
+<script src="js/science.js" defer></script>
+<script src="js/app.js" defer></script>
 </head>
 <body>
 <header>
   <div>
     <h1>Спектры квазаров</h1>
-    <div class="sub" id="meta">загрузка данных…</div>
+    <div class="tagline">Интерактивная лаборатория: определите красное смещение квазара по его спектру</div>
+    <div class="sub small" id="meta">загрузка данных…</div>
   </div>
   <nav id="tabs" aria-label="Разделы">
     <button data-tab="sky">Карта неба</button>
@@ -26,27 +47,64 @@
 
 <main>
   <!-- Карта неба -->
-  <section id="sky" class="tab">
-    <p class="lead">Снимок участка неба из обзора SDSS. Кружки — квазары из каталога, цвет и подпись — красное смещение. Щёлкните по кружку, чтобы открыть спектр.</p>
+  <section id="sky" class="tab" aria-label="Карта неба">
+    <p class="lead">Снимок участка неба из обзора SDSS. Кружки — квазары из каталога, подпись — красное смещение z. Цвет меняется от фиолетового у близких объектов к жёлтому у самых далёких: чем больше z, тем дальше объект и тем раньше во Вселенной мы его видим. Щёлкните по кружку (или перейдите к нему клавишей Tab и нажмите Enter), чтобы открыть спектр.</p>
     <div class="skywrap">
-      <div class="skybox" id="skybox"><img id="skyimg" src="data/sky.jpg" alt="Снимок участка неба SDSS с отмеченными квазарами"><svg id="skysvg" aria-hidden="true"></svg></div>
+      <div class="skybox" id="skybox"><img id="skyimg" src="data/sky.jpg" width="1440" height="1440" loading="lazy" decoding="async" alt="Снимок участка неба SDSS с отмеченными квазарами"><svg id="skysvg" role="group" aria-label="Квазары на снимке неба"></svg></div>
       <div class="skyside">
-        <div id="skyinfo" class="card">Наведите курсор на квазар.</div>
+        <div id="skyinfo" class="card">Наведите курсор на квазар или перейдите к нему клавишей Tab.</div>
         <div class="muted small" id="skymeta"></div>
       </div>
     </div>
   </section>
 
   <!-- Спектр -->
-  <section id="spec" class="tab on">
+  <section id="spec" class="tab on" aria-label="Спектр и красное смещение">
     <aside>
-      <label class="hint">Набор: <select id="dataset"></select></label>
-      <div class="list" id="qlist"></div>
+      <label class="hint" for="dataset">Набор:</label>
+      <select id="dataset"></select>
+      <div class="listtools">
+        <label class="hint" for="qsearch">Поиск: имя, RA или z</label>
+        <input id="qsearch" type="search" placeholder="например, 1202 или 2,4" autocomplete="off" aria-controls="qlist">
+        <div class="listbar">
+          <label class="hint" for="qsort">Сортировка</label>
+          <select id="qsort" aria-label="Сортировка каталога">
+            <option value="z-asc">по z ↑</option>
+            <option value="z-desc">по z ↓</option>
+            <option value="name">по имени</option>
+            <option value="ra">по RA</option>
+          </select>
+          <span id="qcount" class="muted small" aria-live="polite"></span>
+        </div>
+      </div>
+      <div class="list" id="qlist" role="group" aria-label="Объекты выбранного набора"></div>
     </aside>
     <div class="work">
-      <div class="title-row"><b id="qname">—</b><span id="qinfo" class="muted"></span><span id="qlinks"></span></div>
+      <p class="lead spec-intro">Спектр — это свет квазара, разложенный по длинам волн. Широкие горбы — излучение водорода, углерода, магния и других элементов; по тому, насколько они сдвинуты, находят красное смещение z. <span class="muted">Наведите порядок в каталоге поиском и сортировкой.</span></p>
+      <div class="title-row">
+        <span id="qthumb" class="qthumb"></span>
+        <b id="qname" tabindex="-1">—</b><span id="qinfo" class="muted"></span><span id="qlinks"></span>
+        <button id="copylink" type="button" class="linkbtn" title="Скопировать постоянную ссылку на этот объект">Ссылка на объект</button>
+        <span id="copystatus" class="muted small" role="status"></span>
+      </div>
+      <details class="howto">
+        <summary>Как читать этот график</summary>
+        <ul>
+          <li>По горизонтали — наблюдаемая длина волны λ в ангстремах (Å), по вертикали — поток в единицах 10<sup>−17</sup> эрг/с/см²/Å.</li>
+          <li>Короткие штриховые линии сверху подписаны названиями линий (Lyα, C IV, Mg II…). Это их лабораторные длины волн. Двигайте ползунок z: когда штрихи совпадут с горбами спектра, z найдено.</li>
+          <li>Сиреневая полоса и отметки внизу — лес Лайман-альфа: облака межгалактического водорода поглощают свет с длиной волны короче Lyα. Чем больше z, тем гуще лес.</li>
+          <li>Флажок «шкала в системе покоя» делит длины волн на 1 + z — так график выглядит для наблюдателя рядом с квазаром.</li>
+          <li>z — красное смещение: во сколько раз растянулась Вселенная, пока свет летел к нам. 1 + z = λ<sub>набл</sub> / λ<sub>лаб</sub>.</li>
+          <li>В карточках: «расстояние» — сопутствующее, то есть до объекта сегодня; «свет шёл» — сколько лет длился путь света.</li>
+        </ul>
+      </details>
       <div id="quizbar" class="quizbar" hidden></div>
-      <canvas id="plot" width="1100" height="420" aria-label="Спектр квазара"></canvas>
+      <canvas id="plot" width="1100" height="420" role="img" aria-label="Спектр выбранного квазара: поток по вертикали, наблюдаемая длина волны по горизонтали"></canvas>
+      <div class="plotlegend small muted">
+        <span><i class="lg-solid"></i>спектр</span>
+        <span><i class="lg-dash"></i>лабораторные линии</span>
+        <span><i class="lg-forest"></i>лес Лайман-альфа</span>
+      </div>
       <div class="controls">
         <label>z = <input id="zin" type="number" step="0.001" min="0" max="7" value="0"></label>
         <input id="zslider" type="range" min="0" max="5.5" step="0.001" value="0" aria-label="Красное смещение">
@@ -61,7 +119,7 @@
         <label><input type="checkbox" id="restchk"> шкала в системе покоя</label>
       </div>
       <div class="cards">
-        <div class="card" id="card_cat"><div class="k">z по каталогу SDSS</div><div class="v" id="c_zcat">—</div><div class="s" id="c_qc"></div></div>
+        <div class="card" id="card_cat"><div class="k" id="c_zk">z по каталогу SDSS</div><div class="v" id="c_zcat">—</div><div class="s" id="c_qc"></div></div>
         <div class="card"><div class="k">Моё z</div><div class="v" id="c_zmy">—</div><div class="s" id="c_dz"></div></div>
         <div class="card"><div class="k">Расстояние (сопутствующее)</div><div class="v" id="c_dc">—</div><div class="s" id="c_dc2"></div></div>
         <div class="card"><div class="k">Свет шёл к нам</div><div class="v" id="c_lb">—</div></div>
@@ -72,59 +130,64 @@
   </section>
 
   <!-- Выборка -->
-  <section id="sample" class="tab">
+  <section id="sample" class="tab" aria-label="Выборка квазаров">
+    <p class="lead">Таблица и графики по всем квазарам участка: расстояния считаются по вашему z, если вы его ввели, иначе по z проекта. Кнопка ниже выгружает таблицу в CSV — её можно открыть в LibreOffice или Excel.</p>
     <div class="controls">
       <button id="autoall">Авто-z для всех без своего z</button>
       <button id="csv">Скачать таблицу CSV</button>
       <span class="muted" id="sumline"></span>
     </div>
     <div class="grid2">
-      <figure><canvas id="hist" width="560" height="320"></canvas><figcaption>Распределение квазаров участка по расстоянию</figcaption></figure>
-      <figure><canvas id="cone" width="560" height="320"></canvas><figcaption>«Разрез» Вселенной: направление (RA) и расстояние</figcaption></figure>
+      <figure><canvas id="hist" width="560" height="320" role="img" aria-label="Гистограмма: число квазаров по сопутствующему расстоянию"></canvas><figcaption>Распределение квазаров участка по расстоянию. По горизонтали — сопутствующее расстояние в млрд световых лет, по вертикали — число квазаров в интервале 2 млрд световых лет.</figcaption></figure>
+      <figure><canvas id="cone" width="560" height="320" role="img" aria-label="Схема: направление по прямому восхождению и расстояние до квазаров"></canvas><figcaption>«Разрез» Вселенной: направление (RA) и расстояние. Дуги — каждые 5 млрд световых лет от Земли, цвет точки — красное смещение z.</figcaption></figure>
     </div>
-    <div class="tablewrap"><table id="tbl"></table></div>
+    <div class="tablewrap" tabindex="0" role="region" aria-label="Каталог квазаров участка: прокручивается по горизонтали"><table id="tbl" aria-label="Каталог квазаров участка"></table></div>
+    <p class="scrollhint muted small">На узком экране таблица прокручивается по горизонтали.</p>
   </section>
 
   <!-- Эпохи и блазары -->
-  <section id="epochs" class="tab">
-    <p class="lead">Средние (композитные) спектры квазаров разных эпох в системе покоя: каждый спектр «растянут обратно» на (1+z) и усреднён. Линии водорода, углерода, кремния, магния и кислорода видны во все эпохи — тяжёлые элементы были в квазарах уже через 1–2 млрд лет после Большого взрыва.</p>
-    <figure><canvas id="compplot" width="1200" height="430"></canvas><figcaption id="compcap"></figcaption></figure>
+  <section id="epochs" class="tab" aria-label="Эпохи и блазары">
+    <p class="lead">Средние (композитные) спектры квазаров разных эпох в системе покоя: каждый спектр «растянут обратно» на (1+z) и усреднён, то есть показан таким, каким его увидел бы наблюдатель рядом с квазаром. Линии водорода, углерода, кремния, магния и кислорода видны во все эпохи — тяжёлые элементы были в квазарах уже через 1–2 млрд лет после Большого взрыва.</p>
+    <figure><canvas id="compplot" width="1200" height="430" role="img" aria-label="Композитные спектры квазаров разных эпох"></canvas><figcaption id="compcap"></figcaption></figure>
     <h3>Квазары и блазары</h3>
-    <div class="controls"><label>Блазар: <select id="bzsel"></select></label><span class="muted" id="bzinfo"></span></div>
-    <figure><canvas id="bzplot" width="1200" height="360"></canvas><figcaption>Серым — средний спектр квазаров того же диапазона длин волн, цветом — блазар (в системе покоя, z по литературе).</figcaption></figure>
-    <div class="tablewrap"><table id="bztbl"></table></div>
+    <p class="lead">Блазар — квазар, джет которого направлен почти на нас. У FSRQ широкие линии, как у обычных квазаров; у лацертид (BL Lac) линий почти нет, поэтому автоматическое определение z по спектру для них ненадёжно.</p>
+    <div class="controls"><label for="bzsel">Блазар: <select id="bzsel"></select></label><span class="muted" id="bzinfo"></span></div>
+    <figure><canvas id="bzplot" width="1200" height="360" role="img" aria-label="Спектр выбранного блазара и средний спектр квазаров"></canvas><figcaption>Серым — средний спектр квазаров того же диапазона длин волн, цветом — блазар (в системе покоя, z по литературе). По горизонтали — длина волны в системе покоя, Å; по вертикали — поток, нормированный на медиану.</figcaption></figure>
+    <div class="tablewrap" tabindex="0" role="region" aria-label="Свойства блазаров: прокручивается по горизонтали"><table id="bztbl" aria-label="Свойства блазаров"></table></div>
+    <p class="scrollhint muted small">На узком экране таблица прокручивается по горизонтали.</p>
   </section>
 
   <!-- Лес Лайман-альфа -->
-  <section id="forest" class="tab">
-    <p class="lead">Гипотеза проекта: число линий поглощения в лесе Лайман-альфа (и доля поглощённого света D<sub>A</sub>) растёт с красным смещением квазара. Участок (1+z)·[1080; 1160] Å; континуум — степенной закон по «чистым» окнам краснее Lyα. Выборка: квазары участка с z ≥ 2,2 и 40 ярких далёких квазаров из окрестности, после контроля качества.</p>
+  <section id="forest" class="tab" aria-label="Лес Лайман-альфа">
+    <p class="lead">Свет далёкого квазара идёт к нам сквозь облака межгалактического водорода. Каждое облако оставляет узкую линию поглощения, и в спектре получается частокол провалов — «лес Лайман-альфа». Гипотеза проекта: число линий поглощения (и доля поглощённого света D<sub>A</sub>) растёт с красным смещением квазара. Участок (1+z)·[1080; 1160] Å; континуум — степенной закон по «чистым» окнам краснее Lyα. Выборка: квазары участка с z ≥ 2,2 и 40 ярких далёких квазаров из окрестности, после контроля качества.</p>
     <div class="grid2">
-      <figure><canvas id="fplot" width="560" height="360"></canvas><figcaption>Доля поглощённого света D<sub>A</sub> (точки) и закон из литературы (штрих)</figcaption></figure>
-      <figure><canvas id="fplot2" width="560" height="360"></canvas><figcaption>Число линий на 100 Å: метод 2 (●) и метод 1 (×)</figcaption></figure>
+      <figure><canvas id="fplot" width="560" height="360" role="img" aria-label="Доля поглощённого света в зависимости от красного смещения"></canvas><figcaption>Доля поглощённого света D<sub>A</sub> (точки); чёрная линия — закон из литературы, оранжевая — наша подгонка. По горизонтали — красное смещение квазара z; по вертикали — D<sub>A</sub> = 1 − ⟨F/C⟩, то есть какая доля света не дошла до нас из-за поглощения.</figcaption></figure>
+      <figure><canvas id="fplot2" width="560" height="360" role="img" aria-label="Число линий леса на 100 ангстрем в зависимости от красного смещения"></canvas><figcaption>Число линий на 100 Å: метод 2 (●) и метод 1 (×). По горизонтали — красное смещение z; по вертикали — сколько линий поглощения приходится на каждые 100 Å спектра в системе покоя.</figcaption></figure>
     </div>
     <div class="verdict" id="verdict"></div>
-    <div class="tablewrap"><table id="ftbl"></table></div>
+    <div class="tablewrap" tabindex="0" role="region" aria-label="Измерения леса Лайман-альфа: прокручивается по горизонтали"><table id="ftbl" aria-label="Измерения леса Лайман-альфа"></table></div>
+    <p class="scrollhint muted small">На узком экране таблица прокручивается по горизонтали.</p>
   </section>
 
   <!-- Калькулятор -->
-  <section id="calc" class="tab">
-    <p class="lead">Плоская модель ΛCDM, параметры Planck 2018: H<sub>0</sub> = 67,66 км/с/Мпк, Ω<sub>m</sub> = 0,3111, Ω<sub>Λ</sub> = 0,6889.</p>
+  <section id="calc" class="tab" aria-label="Космологический калькулятор">
+    <p class="lead">Плоская модель ΛCDM с параметрами Planck 2018: H<sub>0</sub> = 67,66 км/с/Мпк, Ω<sub>m</sub> = 0,3111, Ω<sub>Λ</sub> = 0,6889. Введите z — калькулятор посчитает расстояния и возраст Вселенной в этот момент.</p>
     <div class="controls">
-      <label>z = <input id="cz" type="number" step="0.01" min="0" value="2"></label>
-      <label>H<sub>0</sub> = <input id="cH0" type="number" step="0.1" value="67.66"></label>
-      <label>Ω<sub>m</sub> = <input id="cOm" type="number" step="0.001" value="0.3111"></label>
+      <label for="cz">z = <input id="cz" type="number" step="0.01" min="0" value="2"></label>
+      <label for="cH0">H<sub>0</sub> = <input id="cH0" type="number" step="0.1" value="67.66"></label>
+      <label for="cOm">Ω<sub>m</sub> = <input id="cOm" type="number" step="0.001" value="0.3111"></label>
     </div>
-    <table class="calc" id="calcout"></table>
+    <div class="tablewrap"><table class="calc" id="calcout" aria-label="Результаты космологического калькулятора"></table></div>
   </section>
 
   <!-- Теория -->
-  <section id="theory" class="tab">
+  <section id="theory" class="tab" aria-label="Теория">
     <div class="grid2 theory">
       <div>
         <h3>Как определить красное смещение</h3>
         <ol>
           <li>Найдите в спектре 2–3 широкие яркие линии (горбы).</li>
-          <li>Предположите, какая это линия (по таблице справа), и щёлкните по её пику: z = λ<sub>набл</sub> / λ<sub>лаб</sub> − 1.</li>
+          <li>Предположите, какая это линия (по таблице с лабораторными длинами волн), и щёлкните по её пику: z = λ<sub>набл</sub> / λ<sub>лаб</sub> − 1.</li>
           <li>Проверьте: остальные линии должны встать на свои горбы. Если не встали — гипотеза неверна, попробуйте другую линию.</li>
           <li>Если синее яркой линии спектр «изрезан» узкими провалами — это лес Лайман-альфа, а линия — Lyα (z &gt; 2).</li>
           <li>Ловушка: Lyα далёкого квазара легко принять за Mg II близкого (отношение длин волн 2798/1216 ≈ 2,30 — не путайте). Решает лес.</li>
@@ -138,7 +201,7 @@
       </div>
       <div>
         <h3>Лабораторные длины волн линий квазаров</h3>
-        <table id="labtbl" class="txt"></table>
+        <table id="labtbl" class="txt" aria-label="Лабораторные длины волн линий"></table>
         <h3>Источники</h3>
         <ol class="small">
           <li>Lyke B. W. et al. The SDSS Quasar Catalog: Sixteenth Data Release // ApJS. 2020. 250. 8.</li>
@@ -156,22 +219,16 @@
   </section>
 
   <!-- Итоги -->
-  <section id="results" class="tab">
+  <section id="results" class="tab" aria-label="Итоги проекта">
+    <p class="lead">Коротко о результате: что получилось измерить, какие выводы следуют из данных и какие объекты каталога требуют осторожности.</p>
     <h3>Критерии успеха</h3>
-    <div class="tablewrap"><table id="crittbl" class="txt"></table></div>
+    <div class="tablewrap"><table id="crittbl" class="txt" aria-label="Критерии успеха проекта"></table></div>
     <h3>Главные выводы</h3>
     <ul id="findings"></ul>
     <h3>Ошибки каталога, найденные контролем качества</h3>
-    <div class="tablewrap"><table id="qctbl" class="txt"></table></div>
+    <div class="tablewrap"><table id="qctbl" class="txt" aria-label="Объекты каталога, требующие осторожности"></table></div>
   </section>
 </main>
 <footer>Данные: Sloan Digital Sky Survey DR17 (sdss.org), открытый доступ. Проект «Сириус.Лето» 2026/27, партнёр — ФИЦ КНЦ СО РАН. <a href="privacy.html">Данные, условия и источники</a></footer>
-
-<script src="data/quasars.js"></script>
-<script src="data/forest.js"></script>
-<script src="data/blazars.js"></script>
-<script src="data/results.js"></script>
-<script src="js/science.js"></script>
-<script src="js/app.js"></script>
 </body>
 </html>

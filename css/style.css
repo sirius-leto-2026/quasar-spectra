@@ -3,6 +3,7 @@
 body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); background: var(--bg); font-size: 15px; }
 header { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--line); }
 h1 { margin: 0; font-size: 22px; color: var(--navy); }
+.tagline { font-size: 14px; color: var(--muted); margin-top: 2px; }
 .sub, .muted { color: var(--muted); }
 .small { font-size: 13px; }
 nav button { border: 1px solid var(--line); background: #fff; padding: 8px 14px; border-radius: 6px; cursor: pointer; font: inherit; }
@@ -12,14 +13,39 @@ main { padding: 14px 20px; }
 .tab.on { display: block; }
 #spec.on { display: flex; gap: 14px; }
 aside { width: 300px; flex: none; }
+#dataset { width: 100%; margin-bottom: 6px; }
+.listtools { margin: 6px 0; }
+.listtools label { display: block; }
+.listtools input[type=search] { width: 100%; font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.listbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.listbar label { margin: 0; }
+.listbar select { flex: 1 1 110px; min-width: 0; font-size: 13px; }
 .list { max-height: 640px; overflow: auto; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
 .list button { display: flex; justify-content: space-between; width: 100%; border: 0; border-bottom: 1px solid var(--line); background: #fff; padding: 6px 10px; text-align: left; font: inherit; font-size: 13px; cursor: pointer; }
 .list button:hover { background: var(--soft); }
 .list button.on { background: #dfe8fb; font-weight: 600; }
 .list .ok { color: #1a7f37; }
+.list .loading { padding: 10px; color: var(--muted); font-size: 13px; }
 .hint { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
 .work { flex: 1; min-width: 0; }
-.title-row { display: flex; gap: 12px; align-items: baseline; margin-bottom: 6px; flex-wrap: wrap; }
+.spec-intro { margin-top: 0; }
+.title-row { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+.title-row b { font-size: 16px; }
+.qthumb { width: 64px; height: 64px; flex: none; border-radius: 6px; overflow: hidden; background: var(--soft); border: 1px solid var(--line); }
+.qthumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.qthumb-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4px; font-size: 10px; line-height: 1.2; color: var(--muted); }
+.linkbtn { font: inherit; font-size: 13px; padding: 3px 9px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--blue); cursor: pointer; }
+.linkbtn:hover { background: var(--soft); }
+.howto { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; margin: 8px 0; font-size: 13px; }
+.howto summary { cursor: pointer; color: var(--navy); font-weight: 600; }
+.howto summary:hover { color: var(--blue); }
+.howto ul { margin: 6px 0 2px 18px; padding: 0; }
+.howto li { margin: 4px 0; }
+.plotlegend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 6px 2px 0; }
+.plotlegend span { display: inline-flex; align-items: center; gap: 5px; }
+.plotlegend i { display: inline-block; width: 24px; height: 0; border-top: 2px solid #16357a; }
+.plotlegend .lg-dash { border-top-style: dashed; border-top-color: #d2501e; }
+.plotlegend .lg-forest { border-top-style: dotted; border-top-color: #5b2d91; }
 canvas { width: 100%; height: auto; background: #fff; border: 1px solid var(--line); border-radius: 6px; display: block; }
 #plot { cursor: crosshair; }
 .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 10px 0; }
@@ -38,6 +64,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 figure { margin: 0; }
 figcaption { font-size: 13px; color: var(--muted); margin-top: 4px; }
 .tablewrap { overflow: auto; margin-top: 12px; }
+.tablewrap:focus-visible { outline: 3px solid #f0a020; outline-offset: 2px; }
+.scrollhint { display: none; }
 table { border-collapse: collapse; background: #fff; font-size: 13px; width: 100%; }
 th, td { border: 1px solid var(--line); padding: 4px 7px; text-align: right; white-space: nowrap; }
 th { background: var(--navy); color: #fff; position: sticky; top: 0; }
@@ -48,18 +76,21 @@ tr.bad td { background: #fff1f0; }
 table.calc { width: auto; font-size: 15px; }
 table.calc td { padding: 6px 12px; }
 footer { padding: 10px 20px; font-size: 12px; color: var(--muted); }
-@media (max-width: 800px) { #spec.on { flex-direction: column; } aside { width: auto; } .list { max-height: 220px; } .grid2 { grid-template-columns: 1fr; } }
+@media (max-width: 800px) { #spec.on { flex-direction: column; } aside { width: auto; } .list { max-height: 260px; } .list button { padding: 9px 10px; } .grid2 { grid-template-columns: 1fr; } .qthumb { width: 52px; height: 52px; } }
 /* карта неба */
 .skywrap { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
-.skybox { position: relative; flex: 1 1 520px; max-width: 860px; }
-.skybox img { width: 100%; display: block; border-radius: 6px; }
+.skybox { position: relative; flex: 1 1 520px; max-width: 860px; min-width: 0; }
+.skybox img { width: 100%; height: auto; display: block; border-radius: 6px; }
 #skysvg { position: absolute; inset: 0; width: 100%; height: 100%; }
-#skysvg circle { fill: transparent; stroke-width: 4; cursor: pointer; }
-#skysvg text { font: 600 28px "Segoe UI", Arial; pointer-events: none; }
-#skysvg .qmark:hover circle, #skysvg .qmark:focus circle { stroke-width: 8; }
-#skysvg .qmark:focus { outline: none; }
-.skyside { flex: 0 1 300px; }
+#skysvg circle { fill: transparent; stroke-width: var(--sw, 4); cursor: pointer; }
+#skysvg circle.hit { stroke: none; }
+#skysvg text { font: 600 28px "Segoe UI", Arial; pointer-events: none; paint-order: stroke; stroke: rgba(255,255,255,.9); stroke-width: 4px; stroke-linejoin: round; }
+#skysvg .qmark:hover circle:not(.hit), #skysvg .qmark:focus circle:not(.hit) { stroke-width: calc(var(--sw, 4) * 1.8); }
+#skysvg .qmark:focus circle:not(.hit) { stroke: #f0a020; }
+#skysvg .qmark:focus text { fill: #f0a020; }
+.skyside { flex: 0 1 300px; min-width: 0; }
 .thumb { float: right; width: 110px; height: 110px; margin: 0 0 6px 8px; border-radius: 4px; }
+.skyside .qthumb-ph { float: right; width: 110px; height: 110px; margin: 0 0 6px 8px; background: var(--soft); border: 1px solid var(--line); border-radius: 4px; }
 .skyside .card { min-height: 140px; line-height: 1.5; }
 .quizbar { background: #fff7e6; border: 1px solid #f0c36d; border-radius: 6px; padding: 6px 10px; margin-bottom: 6px; }
 h3 { color: var(--navy); margin: 16px 0 6px; }
@@ -70,3 +101,16 @@ h3 { color: var(--navy); margin: 16px 0 6px; }
 /* текстовые таблицы (критерии, контроль качества, линии): текст слева, перенос строк */
 table.txt th, table.txt td { text-align: left; white-space: normal; }
 table.txt td:last-child { white-space: nowrap; }
+@media (max-width: 800px) {
+  .scrollhint { display: block; margin: 4px 0 0; }
+  table.calc { width: 100%; table-layout: fixed; }
+  table.calc td { white-space: normal; padding: 6px 8px; vertical-align: top; }
+  table.calc td:first-child { width: 62%; }
+  .tablewrap table.txt { display: block; }
+  table.txt tbody { display: block; }
+  table.txt tr { display: block; border: 1px solid var(--line); border-radius: 6px; margin: 0 0 10px; background: #fff; overflow: hidden; }
+  table.txt tr:first-child { display: none; }
+  table.txt td { display: block; border: 0; border-bottom: 1px solid var(--line); white-space: normal; text-align: left; padding: 6px 9px; }
+  table.txt td:last-child { border-bottom: 0; white-space: normal; }
+  table.txt td::before { content: attr(data-label) ": "; font-weight: 600; color: var(--navy); }
+}
